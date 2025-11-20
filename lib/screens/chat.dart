@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatScreen extends StatefulWidget {
   final String boardName;
@@ -12,6 +13,22 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final messageController = TextEditingController();
+  String? currentUsername;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUsername();
+  }
+
+  Future<void> loadUsername() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    setState(() {
+      currentUsername = doc['username'];
+    });
+  }
 
   Future<void> sendMessage() async {
     if (messageController.text.trim().isEmpty) return;
@@ -23,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
         .add({
       'message': messageController.text.trim(),
       'timestamp': FieldValue.serverTimestamp(),
-      'username': 'Anonymous', 
+      'username': currentUsername ?? "Unknown",
     });
 
     messageController.clear();
@@ -44,7 +61,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   .orderBy('timestamp')
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData)
+                  return Center(child: CircularProgressIndicator());
 
                 final docs = snapshot.data!.docs;
 
@@ -68,9 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: messageController,
-                    decoration: InputDecoration(
-                      hintText: "Type message",
-                    ),
+                    decoration: InputDecoration(hintText: "Type message"),
                   ),
                 ),
                 IconButton(

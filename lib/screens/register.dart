@@ -11,6 +11,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final firstController = TextEditingController();
   final lastController = TextEditingController();
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -28,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .set({
         'firstName': firstController.text.trim(),
         'lastName': lastController.text.trim(),
+        'username': usernameController.text.trim(),
         'role': 'student',
         'createdAt': DateTime.now(),
       });
@@ -37,9 +39,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         MaterialPageRoute(builder: (_) => BoardsScreen()),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Registration failed: $e")),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Registration failed: $e")));
     }
   }
 
@@ -51,15 +52,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            TextField(controller: firstController, decoration: InputDecoration(labelText: "First Name")),
-            TextField(controller: lastController, decoration: InputDecoration(labelText: "Last Name")),
-            TextField(controller: emailController, decoration: InputDecoration(labelText: "Email")),
-            TextField(controller: passwordController, obscureText: true, decoration: InputDecoration(labelText: "Password")),
+            TextField(
+              controller: firstController,
+              decoration: InputDecoration(labelText: "First Name"),
+            ),
+            TextField(
+              controller: lastController,
+              decoration: InputDecoration(labelText: "Last Name"),
+            ),
+            TextField(
+              controller: usernameController,
+              decoration: InputDecoration(labelText: "Username"),
+            ),
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(labelText: "Email"),
+            ),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(labelText: "Password"),
+            ),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: register, child: Text("Register")),
+            ElevatedButton(
+              onPressed: register,
+              child: Text("Register"),
+            ),
           ],
         ),
       ),
     );
   }
 }
+
